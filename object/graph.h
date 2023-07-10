@@ -14,10 +14,13 @@ class Graph {
 
 public:
     map<string, int> IDX;
-    vector<pair<int,edge>> adj[GRAPH_SIZE];
-    edge table[GRAPH_SIZE][GRAPH_SIZE]; // graph matrix
+    map<int, string> ID;
+    edge** table; // graph matrix
 
-    Graph(const string& file_dir);
+    explicit Graph(const string& file_dir);
+    int id2idx(const string& id) const;
+    string idx2id(int idx) const;
+    inline edge get_edge (int from, int to) const;
 };
 
 

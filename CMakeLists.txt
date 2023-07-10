@@ -17,5 +17,7 @@ add_executable(CJ_CVRP
         object/vehicle.cpp
         object/order.cpp
         object/order.h
+        #simulator/program.cpp
+        #simulator/program.h
 
         test.cpp)

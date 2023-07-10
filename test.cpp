@@ -2,53 +2,71 @@
 #include "object/objects.h"
 #include "config.h"
 #include <iostream>
-#include <unistd.h>
+#include <algorithm>
+#include <vector>
+#include <map>
 
-void terminal_test();
-void vehicle_test();
-void order_test();
+void graph_test();
+void terminal_test(const Graph& graph);
+void vehicle_test(const Graph& graph);
+void order_test(const Graph& graph);
 
 int main(){
-//    cout << "\nVehicle Test : \n";
-//    vehicle_test();
-//    cout << "\nTerminal Test : \n";
-//    terminal_test();
-    order_test();
+    Graph graph(OD_MATRIX);
+    cout << "Terminal_test : \n";
+    terminal_test(graph);
+    cout << "Vehicle_test : \n";
+    vehicle_test(graph);
+    cout << "Order Test : \n";
+    order_test(graph);
 }
 
-void terminal_test() {
-    Terminal_Table terminals("../data/" + TERMINALS);
+void graph_test() {
+    cout << "?" << endl;
+    Graph graph(OD_MATRIX);
+}
+
+void terminal_test(const Graph& graph) {
+    Terminal_Table terminals(TERMINALS, graph);
 
     int idx = 0;
     auto& table = terminals.table;
     for(auto iter = table.begin(); iter != table.end(); ++iter) {
         auto& terminal = iter->second;
 
-        cout << terminal.region << " : (" <<
-        terminal.loc.first << ", " << terminal.loc.second << ")\n";
-        idx++;
-        if (idx > 20) {
-            return;
-        }
+        cout << graph.ID.find(iter->first)->second << " : "
+        << terminal << '\n';
+
+        if (++idx > 20) break;
     }
 }
 
-void vehicle_test() {
-    Vehicle_Table vehicles("../data/" + VEHICLES);
+void vehicle_test(const Graph& graph) {
+    Vehicle_Table vehicles(VEHICLES, graph);
 
     int idx = 0;
     auto& table = vehicles.table;
     for(auto iter = table.begin(); iter != table.end(); ++iter) {
-        cout << *iter << '\n';
+        cout << graph.ID.find(iter->start_center)->second << " : " << *iter << '\n';
         idx++;
-        if (idx > 20) {
-            return;
+        if (idx > 10) {
+            break;
+        }
+    }
+
+    sort(table.begin(), table.end());
+    idx = 0;
+    for(auto iter = table.begin(); iter != table.end(); ++iter) {
+        cout << graph.ID.find(iter->start_center)->second << " : " << *iter << '\n';
+        idx++;
+        if (idx > 10) {
+            break;
         }
     }
 }
 
-void order_test() {
-    OrderTable orders("../data/" + ORDERS);
+void order_test(const Graph& graph) {
+    OrderTable orders(ORDERS, graph);
 
     for (int i =0; i<10; i+=3) {
         int idx = 0;
