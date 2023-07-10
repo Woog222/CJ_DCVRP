@@ -6,18 +6,17 @@
 
 void terminal_test();
 void vehicle_test();
+void order_test();
 
 int main(){
-    vehicle_test();
+//    cout << "\nVehicle Test : \n";
+//    vehicle_test();
+//    cout << "\nTerminal Test : \n";
+//    terminal_test();
+    order_test();
 }
 
 void terminal_test() {
-    char cwd[256];
-    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-        std::cout << "Current working directory: " << cwd << std::endl;
-    } else {
-        std::cerr << "Failed to get the current working directory." << std::endl;
-    }
     Terminal_Table terminals("../data/" + TERMINALS);
 
     int idx = 0;
@@ -35,12 +34,6 @@ void terminal_test() {
 }
 
 void vehicle_test() {
-    char cwd[256];
-    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-        std::cout << "Current working directory: " << cwd << std::endl;
-    } else {
-        std::cerr << "Failed to get the current working directory." << std::endl;
-    }
     Vehicle_Table vehicles("../data/" + VEHICLES);
 
     int idx = 0;
@@ -51,5 +44,24 @@ void vehicle_test() {
         if (idx > 20) {
             return;
         }
+    }
+}
+
+void order_test() {
+    OrderTable orders("../data/" + ORDERS);
+
+    for (int i =0; i<10; i+=3) {
+        int idx = 0;
+        auto& table = orders.table[i];
+        for(auto iter = table.begin(); iter != table.end(); ++iter) {
+            cout << *iter << '\n';
+            idx++;
+            if (idx > 5) break;
+        }
+    }
+
+    int group = 0;
+    for (auto& table : orders.table) {
+        cout << group++ << " : " << table.size() << '\n';
     }
 }

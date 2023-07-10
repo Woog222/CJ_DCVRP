@@ -15,5 +15,7 @@ add_executable(CJ_CVRP
         object/terminal.cpp
         object/vehicle.h
         object/vehicle.cpp
+        object/order.cpp
+        object/order.h
 
         test.cpp)

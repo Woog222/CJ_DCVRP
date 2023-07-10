@@ -5,7 +5,9 @@
 #include <string>
 using namespace std;
 
-const int GRAPH_SIZE = 5000;
+const int GRAPH_SIZE = 2000;
+const int ORDER_GROUP_SIZE = 40;
+
 const string ORDERS = "orders.txt";
 const string OD_MATRIX = "od_matrix.txt";
 const string TERMINALS = "terminals.txt";

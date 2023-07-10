@@ -4,6 +4,15 @@
 
 Graph::Graph(const string& file_dir){
 
+    // table reset with {-1,-1}
+    edge init_value = {-1.0,-1.0};
+
+    for (int i =0; i<GRAPH_SIZE; ++i) {
+        for (int j =0; j<GRAPH_SIZE; ++j) {
+            table[i][j] = init_value;
+        }
+    }
+
     ifstream fs(file_dir);
 
     int idx = 0;
@@ -18,17 +27,10 @@ Graph::Graph(const string& file_dir){
         int from = IDX[origin], to = IDX[dest];
 
         adj[from].push_back(
-                pair<int, edge>(to, edge{length, time})
+                pair<int, edge>(to, {length, time})
         );
+        table[from][to] = edge{length, time};
     }
 
-    // table reset with {-1,-1}
-    edge init_value = {-1.0,-1.0};
-    table.resize(idx, vector<edge>(idx, init_value));
 
-    for (int i =0; i<idx; ++i) {
-        for (const auto& e : adj[i]) {
-            table[i][e.first] = e.second;
-        }
-    }
 }

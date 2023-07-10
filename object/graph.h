@@ -6,14 +6,16 @@
 #include "config.h"
 #include <map>
 
-typedef pair<double, double> edge;
+typedef struct {
+    double length, time;
+} edge;
 
 class Graph {
 
 public:
     map<string, int> IDX;
     vector<pair<int,edge>> adj[GRAPH_SIZE];
-    vector<vector<edge>> table; // graph matrix
+    edge table[GRAPH_SIZE][GRAPH_SIZE]; // graph matrix
 
     Graph(const string& file_dir);
 };
