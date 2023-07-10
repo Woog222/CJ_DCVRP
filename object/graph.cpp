@@ -9,8 +9,11 @@ Graph::Graph(const string& file_dir) {
     table = new edge*[GRAPH_SIZE];
     for (int i = 0; i < GRAPH_SIZE; ++i) {
         table[i] = new edge[GRAPH_SIZE];
-        for (int j = 0; j < GRAPH_SIZE; ++j)
+        for (int j = 0; j < GRAPH_SIZE; ++j) {
             table[i][j] = init_value; // Initialize the elements as needed
+            if (i==j) table[i][j] = edge{0,0};
+        }
+
     }
 
     // input

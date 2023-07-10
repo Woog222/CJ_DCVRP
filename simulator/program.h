@@ -11,7 +11,10 @@ class Program {
     OrderTable orderTable;
     Graph graph;
 
-    Program();
+public:
+    explicit Program();
+
+private:
 
     void simulator();
 

@@ -17,7 +17,15 @@ add_executable(CJ_CVRP
         object/vehicle.cpp
         object/order.cpp
         object/order.h
-        #simulator/program.cpp
-        #simulator/program.h
+        object/order_result.h
+        object/order_result.cpp
+
+        simulator/program.cpp
+        simulator/program.h
+        simulator/logger.h
+        simulator/logger.cpp
+        simulator/alloc.h
+        simulator/alloc.cpp
+
 
         test.cpp)

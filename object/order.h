@@ -16,6 +16,7 @@ public:
     string order_id;
     double latitude, longitude, cbm;
     int load, group, from, to, terminal_id, dest_id;// whole group
+    bool serviced = false;
 
     friend std::ostream& operator<<(std::ostream& os, const Order& obj) {
         os << obj.order_id << "( " << obj.group << " )" << " : \n"
