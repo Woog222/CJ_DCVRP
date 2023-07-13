@@ -8,17 +8,18 @@
 class OrderResult{
 public:
     // order
-    OrderResult(const string& vehicleId, const string& ordNo, const string &siteCode, const string &delivered,
+    OrderResult(const string& vehicleId, const string& ordNo, const string &siteCode,
                 int arrivalTime, int waitingTime, int serviceTime, int departureTime, long long sequence);
-
-    // terminal
-    OrderResult(const string &vehicleId, const string &siteCode, long long int sequence);
 
     friend ostream &operator<<(ostream &os, const OrderResult &result);
 
-    string VehicleID, ORD_NO, SiteCode, Delivered;
+    string VehicleID, ORD_NO, SiteCode;
+    int Delivered;
+    int ArrivalTime_print, WaitingTime_print, ServiceTime_print, DepartureTime_print;
     int ArrivalTime, WaitingTime, ServiceTime, DepartureTime;
     long long Sequence;
+
+    void update(int cur_time);
 };
 
 

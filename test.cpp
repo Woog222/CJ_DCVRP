@@ -1,6 +1,7 @@
 #include "init/setting.h"
 #include "object/objects.h"
 #include "config.h"
+#include "simulator/program.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -12,17 +13,19 @@ void vehicle_test(const Graph& graph);
 void order_test(const Graph& graph);
 
 int main(){
+    /**
     Graph graph(OD_MATRIX);
-    cout << "Terminal_test : \n";
-    terminal_test(graph);
-    cout << "Vehicle_test : \n";
-    vehicle_test(graph);
-    cout << "Order Test : \n";
-    order_test(graph);
+    Terminal_Table terminals(TERMINALS, graph);
+    OrderTable orderTable(ORDERS, graph);
+    Vehicle_Table vehicleTable(ORDERS, graph);
+     */
+
+    Program program;
+    program.simulator();
+
 }
 
 void graph_test() {
-    cout << "?" << endl;
     Graph graph(OD_MATRIX);
 }
 

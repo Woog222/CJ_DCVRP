@@ -46,6 +46,7 @@ class Vehicle_Table{
 public:
     vector<Vehicle> table;
 
+    Vehicle_Table() {};
     Vehicle_Table(const string& file_dir, const Graph& graph);
 };
 

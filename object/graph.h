@@ -7,7 +7,7 @@
 #include <map>
 
 typedef struct {
-    double length, time;
+    double time;
 } edge;
 
 class Graph {
@@ -20,7 +20,9 @@ public:
     explicit Graph(const string& file_dir);
     int id2idx(const string& id) const;
     string idx2id(int idx) const;
-    inline edge get_edge (int from, int to) const;
+    inline edge get_edge(int from, int to) const{
+        return table[from][to];
+    }
 };
 
 

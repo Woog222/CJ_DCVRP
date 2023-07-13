@@ -22,34 +22,59 @@ int can_time_cal(int arrival_time, int from, int to) {
     }
 }
 
+/**
+ *
+ * @param veh
+ * @param batch
+ * @param graph
+ * @param vehicles
+ * @param logger
+ * @return allocated successfully (true) OR nothing allocated (false)
+ */
+bool veh_cycle(Vehicle& veh, vector<Order>& batch, const Graph& graph, const vector<Vehicle>& vehicles, Logger& logger) {
 
-vector<OrderResult> veh_cycle(const Vehicle& veh, vector<Order>& batch, const Graph& graph, const vector<Vehicle>& vehicles) {
-
-    vector<OrderResult> ret;
+    bool ret = false;
+    auto travel_time = [&graph](int from, int to) {
+        return int(ceil(graph.get_edge(from, to).time));
+    };
 
     // for each order
     int left = veh.capa, when = veh.free_time, where = veh.start_center;
-    string current_orderId = "not-yet";
+    int terminal = -1;
     for (auto& order : batch) {
-        edge e = graph.get_edge(where, order.dest_id);
-        if (order.serviced || left < order.cbm || e.time == -1.0)
+        if (order.serviced || left < order.cbm || travel_time(where, order.dest_id) ||
+        (terminal!=-1 && terminal!=order.terminal_id))
             continue; // already serviced or too heavy or not connected
 
-        // new place!
-        if (current_orderId != order.order_id) {
-            int arrival_time = when + int(ceil(e.time));
-            int next = can_time_cal(arrival_time, where, order.dest_id);
-            if (next > MAX_START_TIME) continue;
+        int arrival_time, start_time;
 
-            current_orderId = order.order_id;
-            when = next + order.load;
-            where = order.dest_id;
+        // terminal determined (first)
+        if (terminal == -1 && graph.get_edge(where, order.terminal_id).time >= 0) {
+            arrival_time = when + travel_time(where, order.terminal_id) +travel_time(order.terminal_id, order.dest_id);
+            start_time = can_time_cal(arrival_time, where, order.dest_id);
+            if (start_time > MAX_START_TIME) continue;
+            terminal = order.terminal_id;
+            where = order.terminal_id;
+            when += travel_time(where, order.terminal_id);
+
+            logger.add_order(veh.veh_num, STRING_NULL, graph.idx2id(terminal),
+                             when,0,0,when);
         }
-        /////// logging!!
-        left -= order.cbm;
 
+        // not first and different destination
+        if (order.dest_id != where){
+            arrival_time = when + travel_time(where, order.dest_id);
+            int next_start = can_time_cal(arrival_time, where, order.dest_id);
+            if (next_start > MAX_START_TIME) continue;
+            when = next_start + order.load;
+        }
+        where = order.dest_id;
+
+        logger.add_order(veh.veh_num, order.order_id, graph.idx2id(order.dest_id), arrival_time,
+                         start_time-arrival_time,order.load,when);
+        ret |= true;
     }
-    return ret;
+    return true;
 }
 
 /**
@@ -59,7 +84,7 @@ vector<OrderResult> veh_cycle(const Vehicle& veh, vector<Order>& batch, const Gr
  * @param vehicles
  * @return
  */
-batchResult batch_alloc(vector<Order>& batch, const Graph& graph, const vector<Vehicle>& vehicles) {
+batchResult batch_alloc(vector<Order>& batch, const Graph& graph, vector<Vehicle>& vehicles, Logger& logger) {
 
     // return value init
     batchResult ret;
@@ -68,7 +93,7 @@ batchResult batch_alloc(vector<Order>& batch, const Graph& graph, const vector<V
     // calculating start time : max(arrival time, can time)
     auto start_time = [&graph](const Vehicle& veh, const Order& order) {
         edge e = graph.get_edge(veh.start_center, order.dest_id);
-        if (e.time == -1.0 && e.length==-1.0 ) return -1; // not connected
+        if (e.time == -1.0) return -1; // not connected
 
         int arrival_time = int(ceil(e.time)) + veh.free_time;
         return can_time_cal(arrival_time, order.from, order.to);
@@ -85,14 +110,7 @@ batchResult batch_alloc(vector<Order>& batch, const Graph& graph, const vector<V
                 return start_time(veh, a) < start_time(veh, b);
             });
 
-            vector<OrderResult> one_cycle = veh_cycle(veh, batch, graph, vehicles);
-            if (one_cycle.size() > 0) {
-                allocated = true;
-                one_cycle.emplace_back(veh.veh_num, veh.)
-            }
-
-            auto& alloc = ret[veh.veh_num];
-            alloc.insert(alloc.end(), one_cycle.begin(),one_cycle.end());
+            allocated |= veh_cycle(veh, batch, graph, vehicles, logger);
         } //for
         if (!allocated) break;
     } // while

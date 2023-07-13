@@ -31,6 +31,7 @@ class OrderTable {
 public:
     vector<Order> table[ORDER_GROUP_SIZE];
 
+    OrderTable() {};
     OrderTable(const string& file_dir, const Graph& graph);
 
 };

@@ -15,6 +15,7 @@ public:
     pair<double, double> loc; // (latitude, longitude)
     int region;
 
+
     Terminal(double latitude, double longitude, int region_)
     : loc(pair<double,double>(latitude, longitude)), region(region_)
     {}
@@ -31,6 +32,7 @@ class Terminal_Table {
 public:
     map<int, Terminal> table;
 
+    Terminal_Table() {};
     Terminal_Table(const string& file_dir, const Graph& graph);
 };
 

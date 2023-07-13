@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "object/objects.h"
+#include "logger.h"
 
 
 class Program {
@@ -10,12 +11,10 @@ class Program {
     Terminal_Table terminalTable;
     OrderTable orderTable;
     Graph graph;
+    Logger logger;
 
 public:
     explicit Program();
-
-private:
-
     void simulator();
 
 };
