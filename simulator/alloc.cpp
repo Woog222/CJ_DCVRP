@@ -12,12 +12,14 @@
  */
 int can_time_cal(int arrival_time, int from, int to) {
     int quotient = arrival_time / 1440;
+    int remainder = arrival_time % 1440;
+
     if (from < to) {
-        if (from <= arrival_time && arrival_time <= to) return arrival_time;
+        if (from <= remainder && remainder <= to) return arrival_time;
         else return (quotient+1)*1440 + from;
     }
     else {
-        if (from < arrival_time && arrival_time < to) return (quotient+1)*1440 + from;
+        if (from < remainder && remainder < to) return (quotient+1)*1440 + from;
         else return arrival_time;
     }
 }
@@ -42,7 +44,7 @@ bool veh_cycle(Vehicle& veh, vector<Order>& batch, const Graph& graph, const vec
     int left = veh.capa, when = veh.free_time, where = veh.start_center;
     int terminal = -1;
     for (auto& order : batch) {
-        if (order.serviced || left < order.cbm || travel_time(where, order.dest_id) ||
+        if (order.serviced || left < order.cbm || travel_time(where, order.dest_id)<0 ||
         (terminal!=-1 && terminal!=order.terminal_id))
             continue; // already serviced or too heavy or not connected
 
@@ -69,17 +71,21 @@ bool veh_cycle(Vehicle& veh, vector<Order>& batch, const Graph& graph, const vec
             when = next_start + order.load;
         }
         where = order.dest_id;
+        left -= order.cbm;
         order.serviced = true;
 
         logger.add_order(veh.veh_num, order.order_id, graph.idx2id(order.dest_id), arrival_time,
                          start_time-arrival_time,order.load,when);
+
         ret |= true;
     }
+    veh.free_time = when;
+    veh.start_center = where;
+
     return true;
 }
 
 /**
- *
  * @param batch
  * @param graph
  * @param vehicles
