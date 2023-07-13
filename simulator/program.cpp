@@ -7,9 +7,6 @@
 
 
 
-
-
-
 /*
  * at each batch, free_time got set to the start time of that group
  */
@@ -18,9 +15,13 @@ void Program::simulator() {
     cout << "Simulation ongoing..\n";
     logger.order_result_init(ORDER_RESULT_DIR);
 
+    vector<Order> left;
+
     for (int group = 0; group < ORDER_GROUP_SIZE; ++group) {
         auto& batch = orderTable.table[group];
         if (batch.empty()) continue;
+
+        batch.insert(batch.end(), left.begin(), left.end());
 
         cout << "\t";
         cout << "batch " << group << ".. ";
@@ -28,6 +29,11 @@ void Program::simulator() {
         logger.write_order(group * 60 * 6);
 
         cout << "done\n";
+
+        left = vector<Order>();
+        for (auto& order : batch) {
+            if (order.serviced==false) left.push_back(order);
+        }
     }
 }
 

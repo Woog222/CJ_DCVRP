@@ -69,6 +69,7 @@ bool veh_cycle(Vehicle& veh, vector<Order>& batch, const Graph& graph, const vec
             when = next_start + order.load;
         }
         where = order.dest_id;
+        order.serviced = true;
 
         logger.add_order(veh.veh_num, order.order_id, graph.idx2id(order.dest_id), arrival_time,
                          start_time-arrival_time,order.load,when);

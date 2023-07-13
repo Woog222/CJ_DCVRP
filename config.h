@@ -20,6 +20,7 @@ const string ORDER_COLUMNS =
         "ORD_NO,"
         "VehicleID,"
         "Sequence,"
+        "SiteCode,"
         "ArrivalTime,"
         "WaitingTime,"
         "ServiceTime,"

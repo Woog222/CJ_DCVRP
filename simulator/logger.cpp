@@ -19,7 +19,6 @@ void Logger::update_logs(int cur_time_) {
 
 void Logger::order_result_init(const string& file_dir) {
 
-    update_logs(cur_time);
     order_result_dir = file_dir;
     std::ofstream f(order_result_dir);
     f << ORDER_COLUMNS;
@@ -29,6 +28,7 @@ void Logger::order_result_init(const string& file_dir) {
 void Logger::write_order(int cur_time) {
     std::ofstream f(order_result_dir, std::ios::app);
 
+    update_logs(cur_time);
     if (f.is_open()) {
         for (auto& order : orderResults)
             f << order;
