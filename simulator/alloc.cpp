@@ -1,5 +1,6 @@
 #include "alloc.h"
 #include <cmath>
+#include "config.h"
 
 
 
@@ -11,15 +12,16 @@
  * @return
  */
 int can_time_cal(int arrival_time, int from, int to) {
-    int quotient = arrival_time / 1440;
-    int remainder = arrival_time % 1440;
+    int quotient = arrival_time / DAY;
+    int remainder = arrival_time % DAY;
 
     if (from < to) {
         if (from <= remainder && remainder <= to) return arrival_time;
-        else return (quotient+1)*1440 + from;
+        else if (to < remainder) return (quotient+1)*DAY + from;
+        else return quotient*DAY + from; // remainder < from;
     }
-    else {
-        if (from < remainder && remainder < to) return (quotient+1)*1440 + from;
+    else { // to < from
+        if (from < remainder && remainder < to) return quotient*DAY + from;
         else return arrival_time;
     }
 }
@@ -44,31 +46,36 @@ bool veh_cycle(Vehicle& veh, vector<Order>& batch, const Graph& graph, const vec
     int left = veh.capa, when = veh.free_time, where = veh.start_center;
     int terminal = -1;
     for (auto& order : batch) {
-        if (order.serviced || left < order.cbm || travel_time(where, order.dest_id)<0 ||
-        (terminal!=-1 && terminal!=order.terminal_id))
+        if (order.serviced ||
+            left < order.cbm ||
+            (terminal !=-1 && terminal!=order.terminal_id) ||
+            (terminal !=-1 && travel_time(where, order.dest_id) < 0 ) ||  //
+            (terminal ==-1 && travel_time(where, order.terminal_id) < 0 ) ||
+            (terminal ==-1 && travel_time(order.terminal_id, order.dest_id) < 0)
+            )
             continue; // already serviced or too heavy or not connected
 
         int arrival_time, start_time;
 
         // terminal determined (first)
-        if (terminal == -1 && graph.get_edge(where, order.terminal_id).time >= 0) {
+        if (terminal == -1) {
             arrival_time = when + travel_time(where, order.terminal_id) +travel_time(order.terminal_id, order.dest_id);
-            start_time = can_time_cal(arrival_time, where, order.dest_id);
+            start_time = can_time_cal(arrival_time, order.from, order.to);
             if (start_time > MAX_START_TIME) continue;
             terminal = order.terminal_id;
-            where = order.terminal_id;
             when += travel_time(where, order.terminal_id);
+            where = order.terminal_id;
 
             logger.add_order(veh.veh_num, STRING_NULL, graph.idx2id(terminal),
                              when,0,0,when);
         }
 
         // not first and different destination
-        if (order.dest_id != where){
+        if (order.dest_id != where) {
             arrival_time = when + travel_time(where, order.dest_id);
-            int next_start = can_time_cal(arrival_time, where, order.dest_id);
-            if (next_start > MAX_START_TIME) continue;
-            when = next_start + order.load;
+            start_time = can_time_cal(arrival_time, order.from, order.to);
+            if (start_time> MAX_START_TIME) continue;
+            when = start_time+ order.load;
         }
         where = order.dest_id;
         left -= order.cbm;
@@ -82,7 +89,7 @@ bool veh_cycle(Vehicle& veh, vector<Order>& batch, const Graph& graph, const vec
     veh.free_time = when;
     veh.start_center = where;
 
-    return true;
+    return ret;
 }
 
 /**
